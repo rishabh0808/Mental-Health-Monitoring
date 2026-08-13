@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mental Health Monitoring System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            max-width: 600px;
+            width: 100%;
+        }
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+        p.subtitle { color: #7f8c8d; margin-top: 0; margin-bottom: 20px; font-size: 14px; }
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            resize: none;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background 0.2s ease-in-out;
+        }
+        button:hover { background-color: #2980b9; }
+        .result-box {
+            margin-top: 24px;
+            padding: 18px;
+            border-radius: 8px;
+            display: none;
+            line-height: 1.5;
+        }
+        .CRISIS_ALERT { background-color: #fadbd8; color: #78281f; border-left: 5px solid #cd6155; }
+        .STRESSED_SAD { background-color: #fdebd0; color: #7e5109; border-left: 5px solid #f39c12; }
+        .POSITIVE_STABLE { background-color: #d4efdf; color: #145a32; border-left: 5px solid #27ae60; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>AI Mental Health Monitor</h2>
+    <p class="subtitle">Log your daily thoughts or journal entries to evaluate your cognitive and emotional well-being.</p>
+    
+    <textarea id="userInput" placeholder="Type your thoughts here... (e.g., 'I felt completely overwhelmed by work assignments today' or 'I had an incredible run this morning!')"></textarea>
+    <button onclick="evaluateMentalHealth()">Analyze Text Entry</button>
+    
+    <div id="result" class="result-box"></div>
+</div>
+
+<script>
+function evaluateMentalHealth() {
+    const text = document.getElementById('userInput').value;
+    const resultBox = document.getElementById('result');
+    
+    if(!text.trim()) {
+        alert("Please type something before running the analysis.");
+        return;
+    }
+
+    resultBox.style.display = 'none';
+
+    fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+    })
+    .then(response => response.json())
+    .then(data => {
+        resultBox.className = 'result-box'; // clear previous evaluation status classes
+        resultBox.classList.add(data.status);
+        
+        resultBox.innerHTML = `<strong>Metrics Status: ${data.status.replace('_', ' ')}</strong><p>${data.message}</p>`;
+        resultBox.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('API Communication Error:', error);
+    });
+}
+</script>
+
+</body>
+</html>
